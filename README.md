@@ -4,7 +4,7 @@
 
 This repository is an educational tutorial on how to run a PDCU cycle with a coding agent. The Eaton-Kortum model is the worked example because it provides a realistic research task with a clear implementation target, a decisive verification test, and substantive code to understand. The objective is to learn the workflow, not international trade theory itself.
 
-The learner does **not** begin from an empty project. A complete, tested one-industry Eaton-Kortum model is already on `main`, together with the record of the PDCU cycle that produced it.
+The learner does **not** begin from an empty project. A complete, tested one-industry Eaton-Kortum model is the trusted starting state, together with the record of the PDCU cycle that produced it.
 
 The learner's task is one coherent extension:
 
@@ -26,6 +26,17 @@ The starting repository contains a one-industry model whose PDCU cycle has alrea
 | Lab Journal | The Issue and Pull Request that record the plan, implementation, check, and distilled insights |
 
 The learner can inspect this completed cycle before starting the extension. It serves as both a working baseline and an example of what a finished PDCU cycle looks like.
+
+### One-industry baseline artifacts
+
+- Production code: `src/ek_model/`
+- Pre-specified two-route check: `tests/test_exact_hat_equivalence.py`
+- Single Source of Truth: `docs/latest.md`
+- Standalone viewer and quiz: `viewer/model_viewer.html`
+- Reproducible viewer builder: `scripts/build_model_viewer.py`
+- PDCU Plan: [GitHub Issue #1](https://github.com/yutawatabe/pdcu-ek-multisector/issues/1)
+
+Regenerate the educational artifacts with `uv run python scripts/build_model_viewer.py` and run all checks with `uv run --extra test pytest`.
 
 This is a starting state, not a second implementation that remains beside the final model. During the tutorial, the existing model is generalized in place. After the Pull Request is merged, `main` contains the multi-industry model and `docs/latest.md` describes only that current model. The former one-industry state remains available through the earlier commit, Issue, and Pull Request history.
 
@@ -172,7 +183,7 @@ The full-solution and exact-hat implementations must use the same economic closu
 
 ## The Code Viewer
 
-The new viewer should retain the useful interaction of the supplied legacy example: selecting an algorithm step highlights the corresponding implementation. It should add enough structure to make the economic logic visible before the code.
+The new viewer should retain the useful hierarchy and interaction of the supplied current joint-BVP example: selecting an algorithm step reveals and highlights the corresponding implementation. It should add enough structure to make the economic logic visible before the code.
 
 ### Top: what is being solved
 
@@ -304,4 +315,4 @@ These are possible later PDCU exercises, but they are not prerequisites for trea
 
 ## Status
 
-This README defines the intended teaching flow. Before implementation, the remaining choices are the programming language, the precise multi-industry shock, the fixture dimensions, the normalization, the numerical tolerance, and whether quiz answers are stored locally or only used during the viewer session.
+The one-industry baseline is implemented in Python with a three-country fixture, country 0's wage as numeraire, a symmetric 10 percent bilateral trade-cost cut, and a `1e-9` equivalence tolerance. Quiz answers remain in the viewer session. The next PDCU cycle uses this trusted state to make the multi-industry choices described above.

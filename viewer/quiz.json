@@ -1,0 +1,66 @@
+[
+  {
+    "id": "indices",
+    "type": "choice",
+    "prompt": "In pi[n, i], what do n and i mean?",
+    "choices": ["n is importer; i is exporter", "n is exporter; i is importer", "Both index exporters"],
+    "answer": 0,
+    "explanation": "Rows are importers that allocate expenditure; columns are exporters receiving that expenditure."
+  },
+  {
+    "id": "denominator",
+    "type": "choice",
+    "prompt": "Which reader function implements the denominator of the trade-share equation?",
+    "choices": ["derive_trade_shares_and_prices", "build_levels_market_residual", "exact_hat_inputs"],
+    "answer": 0,
+    "explanation": "It sums exporter competitiveness across axis 1, once for each importer row."
+  },
+  {
+    "id": "closure",
+    "type": "text",
+    "prompt": "Which condition determines relative wages?",
+    "keywords": ["market", "clearing"],
+    "answer_text": "Goods-market clearing: each exporter's labor income must equal sales to all importers.",
+    "explanation": "Technology and trade costs determine shares conditional on wages; market clearing closes the wage system."
+  },
+  {
+    "id": "numeraire",
+    "type": "choice",
+    "prompt": "If a different country's wage were normalized to one, what would change?",
+    "choices": ["Nominal wage and price levels, but not trade shares or real wages", "Trade shares only", "Technology and labor endowments"],
+    "answer": 0,
+    "explanation": "Changing the numeraire rescales nominal wages and prices together; real allocations and welfare do not change."
+  },
+  {
+    "id": "hat_inputs",
+    "type": "choice",
+    "prompt": "What baseline equilibrium information does this exact-hat solver require?",
+    "choices": ["Baseline trade shares and incomes", "Baseline technologies only", "Counterfactual wages in levels"],
+    "answer": 0,
+    "explanation": "Baseline shares reweight delivered-cost changes, while baseline incomes scale counterfactual market clearing."
+  },
+  {
+    "id": "two_routes",
+    "type": "text",
+    "prompt": "Why should E1/E0 agree with the exact-hat solution?",
+    "keywords": ["same", "counterfactual"],
+    "answer_text": "Both routes solve the same counterfactual equilibrium under the same closure, shock, and numeraire.",
+    "explanation": "Exact-hat algebra removes unknown technology levels using baseline shares; it does not define a different economy."
+  },
+  {
+    "id": "diagnosis",
+    "type": "choice",
+    "prompt": "Wage errors are large by one common scale factor, while shares and real wages match. What is the likely fault?",
+    "choices": ["A normalization mismatch", "Importer/exporter axes are reversed", "A solver failed to run"],
+    "answer": 0,
+    "explanation": "A common nominal scale discrepancy is the signature of comparing solutions under different numeraires."
+  },
+  {
+    "id": "propagation",
+    "type": "text",
+    "prompt": "Briefly trace how a bilateral trade-cost cut affects real income.",
+    "keywords": ["share", "price"],
+    "answer_text": "Lower delivered costs shift trade shares, change export demand and wages, lower price indices, and therefore change wages relative to prices.",
+    "explanation": "The welfare object in this one-factor model is the wage change divided by the price-index change."
+  }
+]
