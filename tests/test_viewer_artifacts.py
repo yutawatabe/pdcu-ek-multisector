@@ -26,14 +26,14 @@ def test_viewer_artifacts_are_structurally_complete_and_current() -> None:
     quiz = json.loads(quiz_path.read_text(encoding="utf-8"))
 
     assert manifest["verification_passed"] is True
-    assert manifest["step_count"] == 9
+    assert manifest["step_count"] == 12
     assert manifest["flow_group_count"] == 3
-    assert manifest["math_node_count"] >= 9
+    assert manifest["math_node_count"] >= 12
     assert len(quiz) == 8
     assert len({question["id"] for question in quiz}) == 8
     assert "$$" not in html
     assert "&#x20;" not in html
-    assert "reader-oriented implementation" in html
+    assert "one wage iteration at a time" in html
 
     for relative_path, expected_hash in manifest["production_source_sha256"].items():
         actual_hash = hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest()

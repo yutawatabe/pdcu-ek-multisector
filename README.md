@@ -315,4 +315,4 @@ These are possible later PDCU exercises, but they are not prerequisites for trea
 
 ## Status
 
-The one-industry baseline is implemented in Python with a three-country fixture, country 0's wage as numeraire, a symmetric 10 percent bilateral trade-cost cut, and a `1e-9` equivalence tolerance. Quiz answers remain in the viewer session. The next PDCU cycle uses this trusted state to make the multi-industry choices described above.
+The one-industry baseline is implemented in Python with explicit damped iteration on wages, a three-country fixture, country 0's wage as numeraire, a symmetric 10 percent bilateral trade-cost cut, and a `1e-9` equivalence tolerance. Trade costs may be any finite positive values. Quiz answers remain in the viewer session. The next PDCU cycle uses this trusted state to make the multi-industry choices described above.

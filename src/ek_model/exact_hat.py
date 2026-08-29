@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 import numpy as np
-from scipy.optimize import least_squares
 
-from .model import Equilibrium, HatEquilibrium, Primitives, SolverDiagnostics, _as_float_array
+from .model import (
+    Equilibrium,
+    HatEquilibrium,
+    Primitives,
+    SolverDiagnostics,
+    _as_float_array,
+    wage_tatonnement_step,
+)
 
 
 def solve_exact_hat(
@@ -14,53 +20,66 @@ def solve_exact_hat(
     trade_cost_hat: object,
     *,
     residual_tolerance: float = 1e-11,
-    max_evaluations: int = 2_000,
+    damping: float = 0.25,
+    max_iterations: int = 10_000,
 ) -> HatEquilibrium:
-    """Solve the same trade-cost counterfactual from baseline sufficient statistics."""
+    """Solve the counterfactual by iterating on wage hats."""
 
     hat = _as_float_array(trade_cost_hat, "trade_cost_hat")
     shape = (primitives.countries, primitives.countries)
     if hat.shape != shape or np.any(hat <= 0):
         raise ValueError("trade_cost_hat must be positive and match bilateral shares")
-    primitives.with_trade_cost_hat(hat)  # Validate economically feasible counterfactual costs.
+    primitives.with_trade_cost_hat(hat)  # Validate only shape, finiteness, and positivity.
     if baseline.trade_shares.shape != shape:
         raise ValueError("baseline trade shares do not match primitives")
+    if residual_tolerance <= 0:
+        raise ValueError("residual_tolerance must be strictly positive")
+    if not 0 < damping <= 1:
+        raise ValueError("damping must lie in (0, 1]")
+    if max_iterations < 1:
+        raise ValueError("max_iterations must be positive")
 
-    def implied_objects(free_log_wage_hats: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        wage_hats = np.concatenate(([1.0], np.exp(free_log_wage_hats)))
+    def implied_objects(wage_hats: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         delivered_cost_hats = wage_hats[np.newaxis, :] * hat
         reweighting = delivered_cost_hats ** (-primitives.theta)
         denominator = np.sum(baseline.trade_shares * reweighting, axis=1)
         counterfactual_shares = baseline.trade_shares * reweighting / denominator[:, np.newaxis]
         price_hats = denominator ** (-1.0 / primitives.theta)
-        return wage_hats, counterfactual_shares, price_hats
+        return counterfactual_shares, price_hats
 
-    def residual(free_log_wage_hats: np.ndarray) -> np.ndarray:
-        wage_hats, counterfactual_shares, _ = implied_objects(free_log_wage_hats)
+    wage_hats = np.ones(primitives.countries)
+    converged = False
+    residual_norm = float("inf")
+    iterations = 0
+    for iteration in range(max_iterations + 1):
+        counterfactual_shares, price_hats = implied_objects(wage_hats)
         counterfactual_income = wage_hats * baseline.income
         export_revenue = counterfactual_shares.T @ counterfactual_income
-        imbalance = (counterfactual_income - export_revenue) / counterfactual_income
-        return imbalance[1:]
+        full_residual = (counterfactual_income - export_revenue) / counterfactual_income
+        residual_norm = float(np.max(np.abs(full_residual)))
+        if residual_norm <= residual_tolerance:
+            converged = True
+            iterations = iteration
+            break
+        if iteration == max_iterations:
+            iterations = iteration
+            break
+        wage_hats = wage_tatonnement_step(
+            wage_hats,
+            counterfactual_income,
+            counterfactual_shares,
+            damping,
+        )
 
-    solution = least_squares(
-        residual,
-        x0=np.zeros(primitives.countries - 1),
-        xtol=1e-14,
-        ftol=1e-14,
-        gtol=1e-14,
-        max_nfev=max_evaluations,
-    )
-    wage_hats, counterfactual_shares, price_hats = implied_objects(solution.x)
-    counterfactual_income = wage_hats * baseline.income
-    full_residual = (
-        counterfactual_income - counterfactual_shares.T @ counterfactual_income
-    ) / counterfactual_income
-    residual_norm = float(np.max(np.abs(full_residual)))
     diagnostics = SolverDiagnostics(
-        converged=bool(solution.success and residual_norm <= residual_tolerance),
+        converged=converged,
         residual_norm=residual_norm,
-        evaluations=int(solution.nfev),
-        message=str(solution.message),
+        iterations=iterations,
+        message=(
+            "wage-hat iteration converged"
+            if converged
+            else f"wage-hat iteration reached {max_iterations} updates without convergence"
+        ),
     )
     return HatEquilibrium(
         wage_hats=wage_hats,

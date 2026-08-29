@@ -45,10 +45,8 @@ class Primitives:
             raise ValueError("trade_costs must have shape (countries, countries)")
         if np.any(technology <= 0) or np.any(labor <= 0):
             raise ValueError("technology and labor must be strictly positive")
-        if np.any(trade_costs < 1.0):
-            raise ValueError("iceberg trade costs must be at least one")
-        if not np.allclose(np.diag(trade_costs), 1.0):
-            raise ValueError("domestic trade costs must equal one")
+        if np.any(trade_costs <= 0):
+            raise ValueError("trade costs must be strictly positive")
         if not np.isfinite(self.theta) or self.theta <= 0:
             raise ValueError("theta must be strictly positive")
         if not np.isfinite(self.price_constant) or self.price_constant <= 0:
@@ -66,8 +64,6 @@ class Primitives:
         if hat.shape != self.trade_costs.shape or np.any(hat <= 0):
             raise ValueError("trade_cost_hat must be positive and match trade_costs")
         new_costs = self.trade_costs * hat
-        if np.any(new_costs < 1.0) or not np.allclose(np.diag(new_costs), 1.0):
-            raise ValueError("counterfactual iceberg costs must be at least one with unit diagonal")
         return Primitives(
             technology=self.technology,
             labor=self.labor,
@@ -81,7 +77,7 @@ class Primitives:
 class SolverDiagnostics:
     converged: bool
     residual_norm: float
-    evaluations: int
+    iterations: int
     message: str
 
 
@@ -128,6 +124,24 @@ def normalized_market_residual(
     income = wages * labor
     export_revenue = trade_shares.T @ income
     return (income - export_revenue) / income
+
+
+def wage_tatonnement_step(
+    wages: FloatArray,
+    income: FloatArray,
+    trade_shares: FloatArray,
+    damping: float,
+) -> FloatArray:
+    """Raise wages where sales exceed income, then restore ``wage[0] == 1``.
+
+    The multiplicative update preserves positivity.  Damping controls the
+    fraction of the sales-to-income gap applied in each iteration.
+    """
+
+    export_revenue = trade_shares.T @ income
+    sales_to_income = export_revenue / income
+    provisional_wages = wages * sales_to_income**damping
+    return provisional_wages / provisional_wages[0]
 
 
 def example_primitives() -> Primitives:

@@ -11,9 +11,9 @@
     "id": "denominator",
     "type": "choice",
     "prompt": "Which reader function implements the denominator of the trade-share equation?",
-    "choices": ["derive_trade_shares_and_prices", "build_levels_market_residual", "exact_hat_inputs"],
+    "choices": ["derive_level_trade_objects", "measure_level_market_imbalance", "initialize_exact_hat_inputs"],
     "answer": 0,
-    "explanation": "It sums exporter competitiveness across axis 1, once for each importer row."
+    "explanation": "derive_level_trade_objects sums exporter competitiveness across axis 1, once for each importer row."
   },
   {
     "id": "closure",

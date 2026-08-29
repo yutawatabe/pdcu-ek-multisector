@@ -1,21 +1,25 @@
 {
   "viewer_design": "equation-first-expandable-code-tree",
-  "production_sha256": "dbdb46fc816a14254a7e10f5aca5e56d0aba236470ef4c8cc8c98bce2f21e2e1",
+  "production_sha256": "c84098113a74e0410850d6304a4760894f49f7d2df3c5ebe38ddfef83cddb710",
   "production_source_sha256": {
-    "src/ek_model/model.py": "ba6a6a7a56ced4e444e76fe60fcd984137a2dce60262cbe976de34b8b58f04a6",
-    "src/ek_model/full_solution.py": "9bb203fd6339d7097fae87f99018b61d3bb247a183fe6629718eaafaea748d2b",
-    "src/ek_model/exact_hat.py": "177953304d1c0df37a28e2888e167d8b2a1a3b9a2be71855dafb6a1aa76b59bc",
+    "src/ek_model/model.py": "e83e4d9fa38ec802b227b70f45d32e2a186c45527896ceb6cca7353a2c033f2e",
+    "src/ek_model/full_solution.py": "738b613696af37fe12ce38ca58095eac2725ad54a167e1b737426b442408ef92",
+    "src/ek_model/exact_hat.py": "96c13311c17dd28d123b227d5eec11c4bf79a5b17c4d16250ba06bda4d1d343b",
     "src/ek_model/verification.py": "78176770cfe33b433887140a07e155fc264453c4f3c2f2f7e1e84917f2cc90ed"
   },
   "production_code_modified_for_viewer": false,
   "annotated_code_role": "explanatory reconstruction mapped to production source",
   "reader_to_production": {
-    "derive_trade_shares_and_prices": "ek_model.model.trade_system",
-    "build_levels_market_residual": "ek_model.model.normalized_market_residual",
-    "full_solution_route": "ek_model.full_solution.solve_full",
-    "derive_hat_shares_and_prices": "ek_model.exact_hat.solve_exact_hat.implied_objects",
-    "build_hat_market_residual": "ek_model.exact_hat.solve_exact_hat.residual",
-    "exact_hat_route": "ek_model.exact_hat.solve_exact_hat",
+    "initialize_level_wages": "ek_model.full_solution.solve_full initialization",
+    "derive_level_trade_objects": "ek_model.model.trade_system",
+    "measure_level_market_imbalance": "ek_model.model.normalized_market_residual",
+    "update_and_normalize_wages": "ek_model.model.wage_tatonnement_step",
+    "solve_levels_by_wage_iteration": "ek_model.full_solution.solve_full",
+    "initialize_exact_hat_inputs": "ek_model.exact_hat.solve_exact_hat initialization",
+    "derive_hat_trade_objects": "ek_model.exact_hat.solve_exact_hat.implied_objects",
+    "measure_hat_market_imbalance": "ek_model.exact_hat.solve_exact_hat iteration body",
+    "update_and_normalize_wage_hats": "ek_model.model.wage_tatonnement_step",
+    "solve_hats_by_wage_iteration": "ek_model.exact_hat.solve_exact_hat",
     "run_both_counterfactual_routes": "tests.test_exact_hat_equivalence",
     "certify_equivalence": "ek_model.verification.compare_equivalence"
   },
@@ -25,8 +29,8 @@
     "quiz.json",
     "manifest.json"
   ],
-  "step_count": 9,
+  "step_count": 12,
   "flow_group_count": 3,
-  "math_node_count": 10,
+  "math_node_count": 14,
   "verification_passed": true
 }
