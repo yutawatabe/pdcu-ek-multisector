@@ -50,7 +50,7 @@ $$
 If the maximum absolute residual exceeds the tolerance, wages are updated by
 
 $$
-w_i^{(k+1,*)}
+w_i^{(k+1,\star)}
 \leftarrow
 w_i^{(k)}
 \left(\frac{R_i^{(k)}}{Y_i^{(k)}}\right)^{\lambda},
@@ -62,7 +62,7 @@ then renormalized:
 $$
 w_i^{(k+1)}
 \leftarrow
-\frac{w_i^{(k+1,*)}}{w_0^{(k+1,*)}}.
+\frac{w_i^{(k+1,\star)}}{w_0^{(k+1,\star)}}.
 $$
 
 Thus sales above income raise an exporter's wage, making its goods more expensive and increasing its factor income; sales below income lower its wage. Trade shares, prices, incomes, sales, and residuals are recomputed after every update. The solver returns only when $\max_i|F_i^{(k)}|\le 10^{-11}$, and reports failure after 10,000 updates.
